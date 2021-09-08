@@ -1,0 +1,42 @@
+/* MAIN CONTENT CONFIGURATION */
+#main-content {
+    margin-left: 210px;
+}
+.wrapper {
+    display: inline-block;
+    margin-top: 90px;
+    padding-left: 25px;
+    padding-right: 15px;
+    padding-bottom: 25px;
+    padding-top: 10px;
+    width: 100%;
+}
+
+.list-page table{
+    margin: auto;
+    width: 90%;
+}
+.list-page table,th,tr,td{
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+}
+th, td{
+    text-align: center;
+    padding: 10px;
+    text-transform: capitalize;
+}
+table a{
+    color: rgb(3, 165, 206);
+}
+
+.list-page img{
+    width: 70px;
+    height: 100px;
+    object-fit: cover;
+}
+.icon {
+
+    position: relative;
+
+ 
+}

@@ -1,0 +1,50 @@
+.formations{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    justify-items: center;
+    margin: 20px 0;
+}
+.categories{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+    justify-items: center;
+    margin: 10px 0;
+}
+.filter_menu{
+    width: 70%;
+   
+   
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+    margin: 15px 0;
+}
+.filter_menu select, input{
+    border: 3px solid #00b4cc;
+    outline: none;
+    height: 40px;
+    padding: 0 20px;
+}
+.filter_menu input{
+    float: none;
+    display: block;
+    text-align: left;
+    width: 60%;
+    margin: 0;
+    padding: 14px;
+    margin: 15px 0;
+    
+}
+
+  .search{
+ 
+    border: 3px solid #00b4cc;
+  
+    color: #9dbfaf;
+  }
+ 
+
+@import url("../utils/formationItem/formationitem.css");
