@@ -31,10 +31,34 @@ const getAllCourses = async (req, res) => {
         res.json({ success: false, result: error.message })
     }
 }
+const getCoursesByUser = async (req, res) => {
+    try {
+        let { id } = req.params;
+        let categories = await Course.find({ Instructor: id }).populate('Instructor').populate('category');
+        res.json({
+            success: true, result: categories
+        })
+    } catch (error) {
+        res.json({ success: false, result: error.message })
+    }
+}
 
+const deleteCourse = async (req, res) => {
+    try {
+        let result = await Course.findByIdAndRemove(req.params.id);
+        res.json({
+            success: true, result: result
+        })
+
+    } catch (error) {
+        res.json({ success: false, result: error.message })
+    }
+}
 
 
 module.exports = {
     addNewCourse,
-    getAllCourses
+    getAllCourses,
+    deleteCourse,
+    getCoursesByUser
 }
