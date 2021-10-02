@@ -19,15 +19,19 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    cart: {
-        type: Array,
-        default: []
-    },
-    avatar:{
+    cart: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }],
+    avatar: {
         type: String,
         default: "https://res.cloudinary.com/dcs4mclcj/image/upload/v1621974250/avatar/user_qk5hjm.png"
 
-    }
+    },
+    subscribedCourses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }],
 }, {
     timestamps: true
 })

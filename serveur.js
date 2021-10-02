@@ -6,6 +6,7 @@ const fileUpload = require('express-fileupload')
 const cookieParser = require('cookie-parser')
 const courseRoutes = require('./routes/course.routes') ; 
 const courseDetailsRoute = require('./routes/detailscourse.routes') ; 
+const questionsRoute =require('./routes/questions.routes') ; 
 const app = express()
 app.use(express.json())
 app.use(cookieParser())
@@ -41,6 +42,7 @@ app.use('/api', require('./routes/categoryRouter'))
 app.use('/api', require('./routes/formationRouter'))
 app.use('/api/course',courseRoutes) ; 
 app.use('/api/details',courseDetailsRoute) ; 
+app.use('/api/questions',questionsRoute) ; 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () =>{

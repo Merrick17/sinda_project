@@ -12,19 +12,31 @@ const addNewDetails = async (req, res) => {
         let { course } = req.body;
         if (req.files) {
             console.log("FILES", req.files);
+            // Liste pret à ajouter 
             list = req.files.map(elm => {
                 return {
                     itemType: elm.path,
                     itemFile: getExtension(elm.originalname)
                 }
             });
-            let newDetails = new CourseDetails({
-                course: course,
-                content: list
+            let oldDetails = await CourseDetails.findOne({ course: course });
+            if (!oldDetails) {
+                let newDetails = new CourseDetails({
+                    course: course,
+                    content: list
 
-            });
-            let result = await newDetails.save();
-            res.json({ success: true, "details": result })
+                });
+                let result = await newDetails.save();
+                res.json({ success: true, "details": result })
+            } else {
+                let newList =oldDetails.content.concat(list);
+                console.log("NEW LIST",newList) ; 
+                let result = await CourseDetails.findOneAndUpdate({ course: course }, {
+                    content: newList
+                })
+                res.json({ success: true, "details": result })
+            }
+
         } else {
             res.json({ success: false, message: "no items provided" })
         }
@@ -34,10 +46,10 @@ const addNewDetails = async (req, res) => {
     }
 }
 
- const getCourseDetails = async (req, res) => {
+const getCourseDetails = async (req, res) => {
     try {
         let { id } = req.params;
-        let result = await CourseDetails.findOne({course:id});
+        let result = await CourseDetails.findOne({ course: id }).populate('course');
         res.json({ success: true, "details": result })
 
     } catch (error) {
@@ -47,6 +59,6 @@ const addNewDetails = async (req, res) => {
 
 
 module.exports = {
-    addNewDetails, 
+    addNewDetails,
     getCourseDetails
 }

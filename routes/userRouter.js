@@ -18,6 +18,10 @@ router.patch('/update', auth, userCtrl.updateUser)
 router.patch('/update_role/:id', auth, authAdmin, userCtrl.updateUsersRole)
 router.delete('/delete/:id', auth, userCtrl.deleteUser)
 router.post('/addnewuser', userCtrl.addNewUser);
+router.put('/addtocart/:id', auth, userCtrl.addToCart);
+router.get('/cart/:id',auth,userCtrl.getUserCart) ; 
+router.get('/confirm/:id',auth,userCtrl.confirmSubscription) ; 
+router.delete('/deletecart/:id/:courseId',auth,userCtrl.deletItemFromCart) ; 
 // Social Login
 router.post('/google_login', userCtrl.googleLogin)
 router.post('/facebook_login', userCtrl.facebookLogin)

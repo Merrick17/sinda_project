@@ -85,7 +85,7 @@ const userCtrl = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body
-            const user = await Users.findOne({ email })
+            const user = await Users.findOne({ email }).populate('cart').populate('subscribedCourses'); 
             if (!user) return res.status(400).json({ msg: "This email does not exist." })
 
             const isMatch = await bcrypt.compare(password, user.password)
@@ -318,11 +318,65 @@ const userCtrl = {
         } catch (error) {
             return res.status(500).json({ msg: error.message })
         }
+    },
+
+    addToCart: async (req, res) => {
+        try {
+            let { id } = req.params;
+            let { course } = req.body;
+            let user = await Users.findById(id);
+            if (user.cart) {
+                let cart = [...user.cart, course];
+                let result = await Users.findByIdAndUpdate(id, { cart: cart });
+                res.json({ result: result, success: true })
+            } else {
+                let cart = [course];
+                let result = await Users.findByIdAndUpdate(id, { cart: cart });
+                res.json({ result: result, success: true })
+            }
+
+        } catch (error) {
+            return res.status(500).json({ msg: error.message })
+        }
+    },
+    getUserCart: async (req, res) => {
+        try {
+            let { id } = req.params;
+            let user = await Users.findById(id).populate('cart').populate('subscribedCourses')
+            res.json({ result: user, success: true })
+        } catch (error) {
+            return res.status(500).json({ msg: error.message })
+        }
+    },
+    deletItemFromCart: async (req, res) => {
+        try {
+            let { id, courseId } = req.params;
+            let user = await Users.findById(id);
+            let newCart = user.cart.filter((elm) => elm != courseId);
+            let result = await Users.findByIdAndUpdate(id, { cart: newCart });
+            res.json({ result: result, success: true })
+        } catch (error) {
+            return res.status(500).json({ msg: error.message })
+        }
+    },
+    confirmSubscription: async (req, res) => {
+
+        try {
+            let { id } = req.params;
+            let user = await Users.findById(id);
+            if (user.subscribedCourses) {
+                let allCourses = user.subscribedCourses.concat(user.cart);
+                let result = await Users.findByIdAndUpdate(id, { cart: [], subscribedCourses: allCourses });
+                res.json({ result: result, success: true })
+
+            } else {
+                let result = await Users.findByIdAndUpdate(id, { cart: [], subscribedCourses: user.cart });
+                res.json({ result: result, success: true })
+            }
+        } catch (error) {
+            return res.status(500).json({ msg: error.message });
+        }
     }
-
-
-
-
 
 
 
