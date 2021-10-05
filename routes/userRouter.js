@@ -14,6 +14,8 @@ router.post('/reset', auth, userCtrl.resetPassword)
 router.get('/infor', auth, userCtrl.getUserInfor)
 router.get('/all_infor', userCtrl.getUsersAllInfor)
 router.get('/logout', userCtrl.logout)
+router.put('/updatepwd/:id',userCtrl.updatePassword); 
+router.put('/updatename/:id',userCtrl.updateName) ; 
 router.patch('/update', auth, userCtrl.updateUser)
 router.patch('/update_role/:id', auth, authAdmin, userCtrl.updateUsersRole)
 router.delete('/delete/:id', auth, userCtrl.deleteUser)

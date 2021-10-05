@@ -85,7 +85,7 @@ const userCtrl = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body
-            const user = await Users.findOne({ email }).populate('cart').populate('subscribedCourses'); 
+            const user = await Users.findOne({ email }).populate('cart').populate('subscribedCourses');
             if (!user) return res.status(400).json({ msg: "This email does not exist." })
 
             const isMatch = await bcrypt.compare(password, user.password)
@@ -376,10 +376,37 @@ const userCtrl = {
         } catch (error) {
             return res.status(500).json({ msg: error.message });
         }
+    },
+
+
+    updatePassword: async (req, res) => {
+        try {
+            let { id } = req.params;
+            console.log("ID",id) ; 
+            let { password } = req.body;
+            const passwordHash = await bcrypt.hash(password, 12);
+            let result = await Users.findByIdAndUpdate(id, {
+                password: passwordHash
+            });
+            res.json({ result: result, success: true })
+        } catch (error) {
+            return res.status(500).json({ msg: error.message });
+        }
+
+    },
+    updateName: async (req, res) => {
+        try {
+            let { id } = req.params;
+            let { name } = req.body;
+            
+            let result = await Users.findByIdAndUpdate(id, {
+                name: name
+            });
+            res.json({ result: result, success: true })
+        } catch (error) {
+            return res.status(500).json({ msg: error.message });
+        }
     }
-
-
-
 
 
 }
