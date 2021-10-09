@@ -37,8 +37,8 @@ const userCtrl = {
             await usr.save();
             const activation_token = createActivationToken(newUser)
 
-            // const url = `${CLIENT_URL}/user/activate/${activation_token}`
-            // sendMail(email, url, "Verify your email address")
+            const url = `${CLIENT_URL}/user/activate/${activation_token}`
+            sendMail(email, url, "Verify your email address")
 
 
             res.json({ msg: "Register Success! Please activate your email to start." })
