@@ -177,11 +177,9 @@ const userCtrl = {
         }
     }, updateUser: async (req, res) => {
         try {
-            const { name, avatar } = req.body
-            await Users.findOneAndUpdate({ _id: req.user.id }, {
-                name, avatar
-            })
-
+            let { id } = req.params.id;
+            const { name, email, role } = req.body
+            await Users.findByIdAndUpdate(id, { name, email, role });
             res.json({ msg: "Update Success!" })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -382,7 +380,7 @@ const userCtrl = {
     updatePassword: async (req, res) => {
         try {
             let { id } = req.params;
-            console.log("ID",id) ; 
+            console.log("ID", id);
             let { password } = req.body;
             const passwordHash = await bcrypt.hash(password, 12);
             let result = await Users.findByIdAndUpdate(id, {
@@ -398,7 +396,7 @@ const userCtrl = {
         try {
             let { id } = req.params;
             let { name } = req.body;
-            
+
             let result = await Users.findByIdAndUpdate(id, {
                 name: name
             });
@@ -448,5 +446,5 @@ const createRefreshToken = (payload) => {
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
 }
 
-module.exports = userCtrl
+module.exports = userCtrlupdateUser
 
