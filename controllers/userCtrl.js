@@ -6,6 +6,7 @@ const { OAuth2 } = google.auth
 const { CLIENT_URL } = process.env
 const fetch = require('node-fetch')
 const sendMail = require('./sendMail')
+const { restart } = require('nodemon')
 
 const client = new OAuth2(process.env.MAILING_SERVICE_CLIENT_ID)
 
@@ -34,10 +35,10 @@ const userCtrl = {
             }
             let usr = new Users(
                 newUser);
-            await usr.save();
-            const activation_token = createActivationToken(newUser)
+           let result= await usr.save();
+            const activation_token = createActivationToken(result.toJSON())
 
-            const url = `${CLIENT_URL}/user/activate/${activation_token}`
+            const url = `${CLIENT_URL}/activate/${activation_token}`
             sendMail(email, url, "Verify your email address")
 
 
@@ -59,24 +60,15 @@ const userCtrl = {
             return res.status(500).json({ msg: error.message })
         }
     },
-    activateEmail: async (req, res) => {
+    activateEmail: async (req, res) => {    
         try {
-            const { activation_token } = req.body
-            const user = jwt.verify(activation_token, process.env.ACTIVATION_TOKEN_SECRET)
-
-            const { name, email, password } = user
-
-            const check = await Users.findOne({ email })
-            if (check) return res.status(400).json({ msg: "This email already exists." })
-
-            const newUser = new Users({
-                name, email, password
+            const token = req.header("Authorization")
+            jwt.verify(token, process.env.ACTIVATION_TOKEN_SECRET,async (err,user)=>{
+               console.log('err',err); 
+                if(err) return res.status(400).json({msg: "Invalid Token."}); 
+                let result = await Users.findByIdAndUpdate(user._id,{isActive:true}); 
+                res.json({ msg: "Account has been activated!" })
             })
-
-            await newUser.save()
-
-            res.json({ msg: "Account has been activated!" })
-
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -86,11 +78,11 @@ const userCtrl = {
         try {
             const { email, password } = req.body
             const user = await Users.findOne({ email }).populate('cart').populate('subscribedCourses');
-            if (!user) return res.status(400).json({ msg: "This email does not exist." })
+            if (!user) return res.status(400).json({ msg: "This email does not exist.",success:true })
 
             const isMatch = await bcrypt.compare(password, user.password)
-            if (!isMatch) return res.status(400).json({ msg: "Password is incorrect." })
-
+            if (!isMatch) return res.status(400).json({ msg: "Password is incorrect." ,success:true})
+             if(!user.isActive) res.status({success:false,message:"votre compte n'est activer"}); 
             const refresh_token = createAccessToken({ id: user._id })
             let token = createAccessToken({ id: user._id })
             res.cookie('refreshtoken', refresh_token, {
@@ -99,7 +91,7 @@ const userCtrl = {
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             })
 
-            res.json({ msg: "Login success!", token: token, user: user })
+            res.json({ msg: "Login success!", token: token, user: user,success:true })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
@@ -126,7 +118,7 @@ const userCtrl = {
             if (!user) return res.status(400).json({ msg: "This email does not exist." })
 
             const access_token = createAccessToken({ id: user._id })
-            const url = `${CLIENT_URL}/user/reset/${access_token}`
+            const url = `${CLIENT_URL}/reset/${access_token}`
 
             sendMail(email, url, "Reset your password")
             res.json({ msg: "Re-send the password, please check your email." })
@@ -144,7 +136,7 @@ const userCtrl = {
                 password: passwordHash
             })
 
-            res.json({ msg: "Password successfully changed!" })
+            res.json({ msg: "Password successfully changed!",success:true })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
@@ -177,10 +169,10 @@ const userCtrl = {
         }
     }, updateUser: async (req, res) => {
         try {
-            let { id } = req.params.id;
+            let { id } = req.params;
             const { name, email, role } = req.body
-            await Users.findByIdAndUpdate(id, { name, email, role });
-            res.json({ msg: "Update Success!" })
+           let result=   await Users.findByIdAndUpdate(id, { name, email, role });
+            res.json({ msg: "Update Success!",result:result })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
@@ -446,5 +438,5 @@ const createRefreshToken = (payload) => {
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
 }
 
-module.exports = userCtrlupdateUser
+module.exports = userCtrl
 

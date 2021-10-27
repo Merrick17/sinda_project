@@ -19,7 +19,7 @@ require('dotenv').config({
 })
 
 // Connect to mongodb
-const URI = process.env.MONGODB_URL_V2
+const URI = process.env.MONGODB_URL_LOCAL
 mongoose.connect(URI, {
     useCreateIndex: true,
     useFindAndModify: false,
