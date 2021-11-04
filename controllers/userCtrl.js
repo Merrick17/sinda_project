@@ -55,6 +55,10 @@ const userCtrl = {
                 name, email, password: hash, role
             });
             let result = await newUser.save();
+            const activation_token = createActivationToken(result.toJSON())
+
+            const url = `${CLIENT_URL}/activate/${activation_token}`
+            sendMail(email, url, "Verify your email address")
             res.json({ result: 'New User Added', success: true });
         } catch (error) {
             return res.status(500).json({ msg: error.message })
